@@ -1,0 +1,2 @@
+# Edu_SpringMultiDBAccess
+Springで複数のDBに接続する際のサンプルコード

@@ -8,10 +8,10 @@ services:
     stdin_open: true
     tty: true
     environment:
-      APP_DATASOURCE_TRANSACTION_URL: jdbc:postgresql://CustomerDB:5432/customerDb?currentSchema=db1testdata
+      APP_DATASOURCE_TRANSACTION_URL: jdbc:postgresql://TransactionDB:5432/transactionDb?currentSchema=db1testdata
       APP_DATASOURCE_TRANSACTION_username: test
       APP_DATASOURCE_TRANSACTION_password: P@ssw0rd!
-      APP_DATASOURCE_CUSTOMER_URL: jdbc:postgresql://TransactionDB:5432/transactionDb?currentSchema=db2testdata
+      APP_DATASOURCE_CUSTOMER_URL: jdbc:postgresql://CustomerDB:5432/customerDb?currentSchema=db2testdata
       APP_DATASOURCE_CUSTOMER_username: test
       APP_DATASOURCE_CUSTOMER_password: P@ssw0rd!
   transactionDb:

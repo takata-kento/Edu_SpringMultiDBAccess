@@ -20,7 +20,7 @@ public class CustomerTransactionRepository implements CustomerTransactionReposit
         this.customerDataJdbcTemplate = customerDataJdbcTemplate;
     }
 
-    public Transaction getTransactionInfoById(String transactionId) {
+    public Transaction getTransactionInfoById(int transactionId) {
         return this.transactionDataJdbcTemplate.queryForObject(
                 """
                     SELECT
@@ -40,7 +40,7 @@ public class CustomerTransactionRepository implements CustomerTransactionReposit
         );
     }
 
-    public Customer getCustomerInfoById(String customerId) {
+    public Customer getCustomerInfoById(int customerId) {
         return this.customerDataJdbcTemplate.queryForObject(
                 """
                     SELECT

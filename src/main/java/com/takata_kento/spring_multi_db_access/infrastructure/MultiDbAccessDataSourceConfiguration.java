@@ -33,7 +33,7 @@ public class MultiDbAccessDataSourceConfiguration {
         return new JdbcTemplate(dataSource);
     }
 
-    @Bean
+    @Bean("customerDataSourceProperties")
     @ConfigurationProperties("app.datasource.customer")
     public DataSourceProperties customerDataSourceProperties() {
         return new DataSourceProperties();
@@ -41,7 +41,9 @@ public class MultiDbAccessDataSourceConfiguration {
 
     @Bean("customerDataSource")
     @ConfigurationProperties("app.datasource.customer.configuration")
-    public HikariDataSource customerDataSource(DataSourceProperties customerDataSourceProperties) {
+    public HikariDataSource customerDataSource(
+            @Qualifier("customerDataSourceProperties") DataSourceProperties customerDataSourceProperties
+    ) {
         return customerDataSourceProperties.initializeDataSourceBuilder().type(HikariDataSource.class).build();
     }
 

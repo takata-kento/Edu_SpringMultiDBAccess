@@ -6,7 +6,6 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
@@ -14,14 +13,12 @@ import javax.sql.DataSource;
 @Configuration(proxyBeanMethods = false)
 public class MultiDbAccessDataSourceConfiguration {
     @Bean("transactionDataSourceProperties")
-    @Primary
-    @ConfigurationProperties("app.datasource.transaction.configuration")
+    @ConfigurationProperties("app.datasource.transaction")
     public DataSourceProperties transactionDataSourceProperties() {
         return new DataSourceProperties();
     }
 
     @Bean("transactionDataSource")
-    @Primary
     @ConfigurationProperties("app.datasource.transaction.configuration")
     public HikariDataSource transactionDataSource(
             @Qualifier("transactionDataSourceProperties") DataSourceProperties transactionDataSourceProperties
@@ -30,7 +27,6 @@ public class MultiDbAccessDataSourceConfiguration {
     }
 
     @Bean("transactionDataJdbcTemplate")
-    @Primary
     JdbcTemplate transactionDataJdbcTemplate(
             @Qualifier("transactionDataSource")DataSource dataSource
     ) {

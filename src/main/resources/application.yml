@@ -1,0 +1,11 @@
+app:
+  datasource:
+    customer:
+      url:
+      username:
+      password:
+
+    transaction:
+      url:
+      username:
+      password:

@@ -1,2 +1,6 @@
 # Edu_SpringMultiDBAccess
 Springで複数のDBに接続する際のサンプルコード
+
+## Point
+* Spring Bootの自動構成は1つのDBに接続するときのみに対応しているので2つ以上のDBに接続する場合はDataSourceを明示的に示す必要がある
+    * DataSourceの設定方法はinfrastructureパッケージのMultiDbAccessDataSourceConfigurationクラスを参照

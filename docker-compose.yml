@@ -1,0 +1,38 @@
+version: "1.0"
+services:
+  api:
+    build: .
+    ports:
+      - "8080:8080"
+    container_name: springMultiDbAccess
+    stdin_open: true
+    tty: true
+    environment:
+      APP_DATASOURCE_TRANSACTION_URL: jdbc:postgresql://TransactionDB:5432/transactionDb?currentSchema=db1testdata
+      APP_DATASOURCE_TRANSACTION_username: test
+      APP_DATASOURCE_TRANSACTION_password: P@ssw0rd!
+      APP_DATASOURCE_CUSTOMER_URL: jdbc:postgresql://CustomerDB:5432/customerDb?currentSchema=db2testdata
+      APP_DATASOURCE_CUSTOMER_username: test
+      APP_DATASOURCE_CUSTOMER_password: P@ssw0rd!
+  transactionDb:
+    image: postgres:12.19
+    container_name: TransactionDB
+    volumes:
+      - ./sql/transactionDb:/docker-entrypoint-initdb.d
+    environment:
+      POSTGRES_PASSWORD: P@ssw0rd!
+      POSTGRES_USER: test
+      POSTGRES_DB: transactionDb
+    stdin_open: true
+    tty: true
+  customerDb:
+    image: postgres:12.19
+    container_name: CustomerDB
+    volumes:
+      - ./sql/customerDb:/docker-entrypoint-initdb.d
+    environment:
+      POSTGRES_PASSWORD: P@ssw0rd!
+      POSTGRES_USER: test
+      POSTGRES_DB: customerDb
+    stdin_open: true
+    tty: true

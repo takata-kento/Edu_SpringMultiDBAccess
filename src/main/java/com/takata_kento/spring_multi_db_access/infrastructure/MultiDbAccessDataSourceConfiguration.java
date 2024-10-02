@@ -7,6 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.simple.JdbcClient;
 
 import javax.sql.DataSource;
 
@@ -26,11 +27,11 @@ public class MultiDbAccessDataSourceConfiguration {
         return transactionDataSourceProperties.initializeDataSourceBuilder().type(HikariDataSource.class).build();
     }
 
-    @Bean("transactionDataJdbcTemplate")
-    JdbcTemplate transactionDataJdbcTemplate(
+    @Bean("transactionDataJdbcClient")
+    JdbcClient transactionDataJdbcClient(
             @Qualifier("transactionDataSource")DataSource dataSource
     ) {
-        return new JdbcTemplate(dataSource);
+        return JdbcClient.create(dataSource);
     }
 
     @Bean("customerDataSourceProperties")
@@ -47,10 +48,10 @@ public class MultiDbAccessDataSourceConfiguration {
         return customerDataSourceProperties.initializeDataSourceBuilder().type(HikariDataSource.class).build();
     }
 
-    @Bean("customerDataJdbcTemplate")
-    JdbcTemplate customerDataJdbcTemplate(
+    @Bean("customerDataJdbcClient")
+    JdbcClient customerDataJdbcClient(
             @Qualifier("customerDataSource")DataSource dataSource
     ) {
-        return new JdbcTemplate(dataSource);
+        return JdbcClient.create(dataSource);
     }
 }

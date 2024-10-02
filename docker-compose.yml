@@ -15,7 +15,7 @@ services:
       APP_DATASOURCE_CUSTOMER_username: test
       APP_DATASOURCE_CUSTOMER_password: P@ssw0rd!
   transactionDb:
-    image: postgres:12.19
+    image: postgres:16.4
     container_name: TransactionDB
     volumes:
       - ./sql/transactionDb:/docker-entrypoint-initdb.d
@@ -26,7 +26,7 @@ services:
     stdin_open: true
     tty: true
   customerDb:
-    image: postgres:12.19
+    image: postgres:16.4
     container_name: CustomerDB
     volumes:
       - ./sql/customerDb:/docker-entrypoint-initdb.d

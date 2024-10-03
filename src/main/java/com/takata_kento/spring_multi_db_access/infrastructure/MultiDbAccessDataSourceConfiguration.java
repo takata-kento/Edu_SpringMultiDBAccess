@@ -13,13 +13,13 @@ import javax.sql.DataSource;
 
 @Configuration(proxyBeanMethods = false)
 public class MultiDbAccessDataSourceConfiguration {
-    @Bean("transactionDataSourceProperties")
+    @Bean
     @ConfigurationProperties("app.datasource.transaction")
     public DataSourceProperties transactionDataSourceProperties() {
         return new DataSourceProperties();
     }
 
-    @Bean("transactionDataSource")
+    @Bean
     @ConfigurationProperties("app.datasource.transaction.configuration")
     public HikariDataSource transactionDataSource(
             @Qualifier("transactionDataSourceProperties") DataSourceProperties transactionDataSourceProperties
@@ -27,20 +27,20 @@ public class MultiDbAccessDataSourceConfiguration {
         return transactionDataSourceProperties.initializeDataSourceBuilder().type(HikariDataSource.class).build();
     }
 
-    @Bean("transactionDataJdbcClient")
+    @Bean
     JdbcClient transactionDataJdbcClient(
             @Qualifier("transactionDataSource")DataSource dataSource
     ) {
         return JdbcClient.create(dataSource);
     }
 
-    @Bean("customerDataSourceProperties")
+    @Bean
     @ConfigurationProperties("app.datasource.customer")
     public DataSourceProperties customerDataSourceProperties() {
         return new DataSourceProperties();
     }
 
-    @Bean("customerDataSource")
+    @Bean
     @ConfigurationProperties("app.datasource.customer.configuration")
     public HikariDataSource customerDataSource(
             @Qualifier("customerDataSourceProperties") DataSourceProperties customerDataSourceProperties
@@ -48,7 +48,7 @@ public class MultiDbAccessDataSourceConfiguration {
         return customerDataSourceProperties.initializeDataSourceBuilder().type(HikariDataSource.class).build();
     }
 
-    @Bean("customerDataJdbcClient")
+    @Bean
     JdbcClient customerDataJdbcClient(
             @Qualifier("customerDataSource")DataSource dataSource
     ) {

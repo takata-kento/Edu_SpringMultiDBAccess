@@ -11,6 +11,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.SqlConfig;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -56,26 +58,12 @@ class SpringMultiDbAccessApplicationTests {
     @Autowired
     CustomerTransactionRepository customerTransactionRepository;
 
+    @Sql(scripts = {"/transactionDbInit.sql"},
+         config  = @SqlConfig(dataSource = "transactionDataSource")
+    )
     @Test
     void repositoryTransactionDataTest() {
         // Given
-        transactionDataJdbcClient
-                .sql("""
-                    CREATE SCHEMA db1testdata;
-                """)
-                .update();
-
-        transactionDataJdbcClient
-                .sql("""
-                    CREATE TABLE db1testdata.transaction_log (
-                        transaction_id integer,
-                        customer_id    integer,
-                        total          integer,
-                        date           timestamptz
-                    );
-                """)
-                .update();
-
         transactionDataJdbcClient
                 .sql("""
                     INSERT INTO
@@ -100,27 +88,12 @@ class SpringMultiDbAccessApplicationTests {
         Assertions.assertEquals(expectedData.date(), actualData.date());
     }
 
+    @Sql(scripts = {"/customerDbInit.sql"},
+            config  = @SqlConfig(dataSource = "customerDataSource")
+    )
     @Test
     void customerDataJdbcClientTest() {
         // Given
-        customerDataJdbcClient
-                .sql("""
-                    CREATE SCHEMA db2testdata;
-                """)
-                .update();
-
-        customerDataJdbcClient
-                .sql("""
-                    CREATE TABLE db2testdata.customer_info (
-                        customer_id integer,
-                        name        character varying(50),
-                        age         integer,
-                        birthday    date,
-                        gender      character varying(1)
-                    );
-                """)
-                .update();
-
         customerDataJdbcClient
                 .sql("""
                     INSERT INTO

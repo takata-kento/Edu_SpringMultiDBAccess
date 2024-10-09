@@ -1,9 +1,10 @@
 package com.takata_kento.spring_multi_db_access.infrastructure;
 
+import com.takata_kento.spring_multi_db_access.annotation.CustomerDataJdbcClient;
+import com.takata_kento.spring_multi_db_access.annotation.TransactionDataJdbcClient;
 import com.takata_kento.spring_multi_db_access.domain.Customer;
 import com.takata_kento.spring_multi_db_access.domain.CustomerTransactionRepositoryInterface;
 import com.takata_kento.spring_multi_db_access.domain.Transaction;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
@@ -13,8 +14,8 @@ public class CustomerTransactionRepository implements CustomerTransactionReposit
     private final JdbcClient customerDataJdbcClient;
 
     public CustomerTransactionRepository(
-            @Qualifier("transactionDataJdbcClient") JdbcClient transactionDataJdbcClient,
-            @Qualifier("customerDataJdbcClient")    JdbcClient customerDataJdbcClient
+            @TransactionDataJdbcClient JdbcClient transactionDataJdbcClient,
+            @CustomerDataJdbcClient    JdbcClient customerDataJdbcClient
     ) {
         this.transactionDataJdbcClient = transactionDataJdbcClient;
         this.customerDataJdbcClient = customerDataJdbcClient;

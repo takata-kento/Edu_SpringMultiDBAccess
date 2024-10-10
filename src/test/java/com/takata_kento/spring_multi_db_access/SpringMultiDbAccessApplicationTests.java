@@ -1,5 +1,7 @@
 package com.takata_kento.spring_multi_db_access;
 
+import com.takata_kento.spring_multi_db_access.annotation.CustomerDataJdbcClient;
+import com.takata_kento.spring_multi_db_access.annotation.TransactionDataJdbcClient;
 import com.takata_kento.spring_multi_db_access.domain.Customer;
 import com.takata_kento.spring_multi_db_access.domain.Transaction;
 import com.takata_kento.spring_multi_db_access.infrastructure.CustomerTransactionRepository;
@@ -48,11 +50,11 @@ class SpringMultiDbAccessApplicationTests {
     }
 
     @Autowired
-    @Qualifier("transactionDataJdbcClient")
+    @TransactionDataJdbcClient
     JdbcClient transactionDataJdbcClient;
 
     @Autowired
-    @Qualifier("customerDataJdbcClient")
+    @CustomerDataJdbcClient
     JdbcClient customerDataJdbcClient;
 
     @Autowired

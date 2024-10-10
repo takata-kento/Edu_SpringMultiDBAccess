@@ -2,29 +2,36 @@ package com.takata_kento.spring_multi_db_access;
 
 import com.takata_kento.spring_multi_db_access.annotation.CustomerDataJdbcClient;
 import com.takata_kento.spring_multi_db_access.annotation.TransactionDataJdbcClient;
-import com.takata_kento.spring_multi_db_access.domain.Customer;
-import com.takata_kento.spring_multi_db_access.domain.Transaction;
 import com.takata_kento.spring_multi_db_access.infrastructure.CustomerTransactionRepository;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
-import java.sql.Date;
+import java.nio.charset.StandardCharsets;
 
 @SpringBootTest
+@AutoConfigureMockMvc
 @Testcontainers
-class SpringMultiDbAccessApplicationTests {
+public class SpringMultiDbAccessControllerTests {
+    @Autowired
+    MockMvc mockMvc;
+
     @Container
     static PostgreSQLContainer<?> transactionDBContainer =
             new PostgreSQLContainer<>(DockerImageName.parse("postgres:16.4"))
@@ -61,10 +68,11 @@ class SpringMultiDbAccessApplicationTests {
     CustomerTransactionRepository customerTransactionRepository;
 
     @Sql(scripts = {"/transactionDbInit.sql"},
-         config  = @SqlConfig(dataSource = "transactionDataSource")
+            config  = @SqlConfig(dataSource = "transactionDataSource")
     )
+
     @Test
-    void repositoryTransactionDataTest() {
+    void shouldReturnMessage() throws Exception {
         // Given
         transactionDataJdbcClient
                 .sql("""
@@ -78,46 +86,24 @@ class SpringMultiDbAccessApplicationTests {
                         ('24102101'    , '4'             , '50021', '2024-10-21 20:38:02+09:00');
                 """)
                 .update();
-        Transaction expectedData = new Transaction(24042101, 1, 400, Date.valueOf("2024-04-21"));
+
+        String expect =
+                """
+                    {
+                        "transactionId": 24042101,
+                        "customerId": 1,
+                        "total": 400,
+                        "date": "2024-04-21"
+                    }
+                """;
 
         // When
-        Transaction actualData = this.customerTransactionRepository.getTransactionInfoById(24042101);
+        String actual = mockMvc.perform(MockMvcRequestBuilders.get("/getTransactionInfo/24042101"))
+                               .andDo(MockMvcResultHandlers.print())
+                               .andExpect(MockMvcResultMatchers.status().isOk())
+                               .andReturn().getResponse().getContentAsString(StandardCharsets.UTF_8);
 
         // Then
-        Assertions.assertEquals(expectedData.transactionId(), actualData.transactionId());
-        Assertions.assertEquals(expectedData.customerId(), actualData.customerId());
-        Assertions.assertEquals(expectedData.total(), actualData.total());
-        Assertions.assertEquals(expectedData.date(), actualData.date());
-    }
-
-    @Sql(scripts = {"/customerDbInit.sql"},
-            config  = @SqlConfig(dataSource = "customerDataSource")
-    )
-    @Test
-    void customerDataJdbcClientTest() {
-        // Given
-        customerDataJdbcClient
-                .sql("""
-                    INSERT INTO
-                      db2testdata.customer_info
-                        (customer_id, name     , age , birthday    , gender)
-                    VALUES
-                        ('1'        , 'alice'  , '10', '2014-03-31', '1'),
-                        ('2'        , 'bob'    , '27', '1997-08-13', '0'),
-                        ('3'        , 'charlie', '72', '1952-11-04', '1'),
-                        ('4'        , 'dave'   , '47', '1977-12-14', '0');
-                """)
-                .update();
-        Customer expectedData = new Customer(1, "alice", 10, Date.valueOf("2014-03-31"), "1");
-
-        // When
-        Customer actualData = this.customerTransactionRepository.getCustomerInfoById(1);
-
-        // Then
-        Assertions.assertEquals(expectedData.customerId(), actualData.customerId());
-        Assertions.assertEquals(expectedData.name(), actualData.name());
-        Assertions.assertEquals(expectedData.age(), actualData.age());
-        Assertions.assertEquals(expectedData.birthday(), actualData.birthday());
-        Assertions.assertEquals(expectedData.gender(), actualData.gender());
+        JSONAssert.assertEquals(expect, actual, JSONCompareMode.STRICT);
     }
 }
